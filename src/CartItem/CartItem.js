@@ -5,51 +5,65 @@ const InvalidQuantityException = require("./InvalidQuantityException.js");
 const InvalidPriceException = require("./InvalidPriceException.js");
 
 module.exports = class CartItem {
+  //region private attributes
+  #articleId;
+  #name;
+  #quantity;
+  #price;
+  //endregion private attributes
 
-    //region private attributes
-    #articleId;
-    #name;
-    #quantity;
-    #price;
-    //endregion private attributes
-
-    //region public methods
-    constructor(articleId, name, quantity, price) {
-        throw new Error();
+  //region public methods
+  constructor(articleId, name, quantity, price) {
+    if (articleId < 1) {
+      throw new InvalidArticleIdException();
     }
-
-    get articleId() {
-        throw new Error();
+    if (quantity < 1) {
+      throw new InvalidQuantityException();
     }
-
-    get name() {
-        throw new Error();
+    if (price < 10) {
+      throw new InvalidPriceException();
     }
+    this.#articleId = articleId;
+    this.#name = name;
+    this.#quantity = quantity;
+    this.#price = price;
+  }
 
-    get quantity() {
-        throw new Error();
+  get articleId() {
+    return this.#articleId;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  get quantity() {
+    return this.#quantity;
+  }
+
+  set quantity(value) {
+    if (value < 1) {
+      throw new InvalidQuantityException();
     }
+    this.#quantity = value;
+  }
 
-    set quantity(value) {
-        throw new Error();
+  get price() {
+    return this.#price;
+  }
+
+  set price(value) {
+    if (value < 10) {
+      throw new InvalidPriceException();
     }
+    this.#price = value;
+  }
 
-    get price() {
-        throw new Error();
-    }
+  get total() {
+    return this.#quantity * this.#price;
+  }
+  //endregion public methods
 
-    set price(value) {
-        throw new Error();
-    }
-
-    get total() {
-        throw new Error();
-    }
-    //endregion public methods
-
-    //region private methods
-    //endregion private methods
-}
-
-
-
+  //region private methods
+  //endregion private methods
+};
