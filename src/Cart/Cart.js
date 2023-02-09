@@ -8,29 +8,31 @@ const UpdateCartException = require("./UpdateCartException.js");
 module.exports = class Cart {
   //region private attributes
   #items = [];
-  #total;
-  #quantity;
-  #price;
   //endregion private attributes
 
   //region public methods
   constructor(items) {
-    this.#items = items;
-    this.#total = this.#quantity * this.#price;
+    this.items = items ;
   }
 
   get items() {
-    if (this.#items === null) {
+    if (!Array.isArray(this.#items)) {
       throw new EmptyCartException();
     }
     return this.#items;
   }
 
-  get total() {
-    if (this.#items === null) {
+  set items(value) {
+    if (!Array.isArray(this.#items)) {
       throw new EmptyCartException();
     }
+    
+    this.#items = value;
 
+  }
+
+  get total() {
+    const items = this.items;
     let total = 0;
 
     for (let item of this.items) {
