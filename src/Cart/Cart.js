@@ -2,8 +2,6 @@
 
 const EmptyCartException = require("./EmptyCartException.js");
 const UpdateCartException = require("./UpdateCartException.js");
-//const InvalidQuantityException = require("./InvalidQuantityException.js");
-//const InvalidPriceException = require("./InvalidPriceException.js");
 
 module.exports = class Cart {
   //region private attributes
@@ -26,9 +24,7 @@ module.exports = class Cart {
     if (!Array.isArray(this.#items)) {
       throw new EmptyCartException();
     }
-    
     this.#items = value;
-
   }
 
   get total() {
@@ -41,12 +37,12 @@ module.exports = class Cart {
     return total;
   }
 
-  count(bool = false) {
+  count(unique = false) {
     if (this.#items === null) {
       throw new EmptyCartException();
     }
 
-    if (bool) {
+    if (unique) {
       return this.#items.length;
     }
 
