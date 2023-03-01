@@ -3,71 +3,95 @@
  * @brief     This class is designed to test the behaviour of a cart.
  * @author    Created by Nicolas.GLASSEY
  * @version   13-02-2022 - original (dedicated to RIA1)
-<<<<<<< HEAD
- * @version   08-03-2022 - update
+ * @version   27-02-2023 - update for first eval
  */
 
-let Cart = require("../Cart/Cart.js");
+"use strict";
 
+let Cart = require('../Cart/Cart.js');
 const CartItem = require("../CartItem/CartItem.js");
-const EmptyCartException = require("../Cart/EmptyCartException.js");
-const UpdateCartException = require("../Cart/UpdateCartException.js");
+const MultipleCurrenciesException = require("../Cart/MultipleCurrenciesException");
 
-test("items_EmptyCart_ThrowException", () => {
-  //given
-  let cart = new Cart(null);
+test('allProperties_AfterInstantiationEmptyCart_ReturnCorrectValues', () => {
+    //given
+    let expectedItems = [];
+    let expectedCurrency = "CHF";
+    let expectedTotal = 0;
+    let cart = new Cart();
 
-  //when
-  //Event triggered by th assertion
+    //when
+    //Assertion will trigger the events
 
-  //then
-  expect(() => cart.items).toThrow(EmptyCartException);
-});
+    //then
+    expect(cart.items).toEqual(expectedItems);
+    expect(cart.currency).toEqual(expectedCurrency);
+    expect(cart.total).toEqual(expectedTotal);
+})
 
-test("total_EmptyCart_ThrowException", () => {
-  //given
-  let cart = new Cart(null);
-
-  //when
-  //Event triggered by th assertion
-
-  //then
-  expect(() => cart.total).toThrow(EmptyCartException);
-});
-
-test("count_EmptyCart_ThrowException", () => {
-  //given
-  let cart = new Cart(null);
-
-  //when
-  //Event triggered by th assertion
-
-  //then
-  expect(() => cart.count()).toThrow(EmptyCartException);
-});
-
-test("add_EmptyCartEmptyItemsToAdd_ThrowException", () => {
-  //given
-  let cart = new Cart(null);
-  let items = null;
-
-  //when
-  expect(() => cart.add(items)).toThrow(UpdateCartException);
-
-  //then
-  //Exception is thrown
-});
-
-test('items_NominalCase_GetItems', () => {
+test('allProperties_AfterInstantiationWithDefaultCurrency_ReturnCorrectValues', () => {
     //given
     let cartItem1 = new CartItem(1,"Iphone 27", 1,10);
     let cartItem2= new CartItem(2,"Iphone 28",2,20);
     let expectedItems = [cartItem1, cartItem2];
-    let actualItems = null;
+    let expectedCurrency = "CHF";
+    let expectedTotal = 50;
     let cart = new Cart(expectedItems);
 
     //when
-    actualItems = cart.items;
+    //Assertion will trigger the events
+
+    //then
+    for (let i = 0 ; i <= cart.items.length ; i++)
+    {
+        expect(cart.items[i]).toEqual(expectedItems[i]);
+    }
+    expect(cart.currency).toEqual(expectedCurrency);
+    expect(cart.total).toEqual(expectedTotal);
+})
+
+test('allProperties_AfterInstantiationWithCustomCurrency_ReturnCorrectValues', () => {
+    //given
+    let cartItem1 = new CartItem(1,"Iphone 27", 1,10, "USD");
+    let cartItem2= new CartItem(2,"Iphone 28",2,20, "USD");
+    let expectedItems = [cartItem1, cartItem2];
+    let expectedCurrency = "USD";
+    let expectedTotal = 50;
+    let cart = new Cart(expectedItems);
+
+    //when
+    //Assertion will trigger the events
+
+    //then
+    for (let i = 0 ; i <= cart.items.length ; i++)
+    {
+        expect(cart.items[i]).toEqual(expectedItems[i]);
+    }
+    expect(cart.currency).toEqual(expectedCurrency);
+    expect(cart.total).toEqual(expectedTotal);
+})
+
+test('cart_InstantiationWithMultipleCurrencies_ThrowException', () => {
+    //given
+    let cartItem1 = new CartItem(1,"Iphone 27", 1,10, "USD");
+    let cartItem2= new CartItem(2,"Iphone 28",2,20, "EUR");
+    let expectedItems = [cartItem1, cartItem2];
+
+    //when
+    expect(() => new Cart(expectedItems)).toThrow(MultipleCurrenciesException);
+
+    //then
+    //Exception is thrown
+})
+
+test('items_NominalCaseCustomCurrency_GetItems', () => {
+    //given
+    let cartItem1 = new CartItem(1,"Iphone 27", 1,10, "USD");
+    let cartItem2= new CartItem(2,"Iphone 28",2,20, "USD");
+    let expectedItems = [cartItem1, cartItem2];
+    let cart = new Cart(expectedItems);
+
+    //when
+    let actualItems = cart.items;
 
     //then
     for (let i = 0 ; i <= expectedItems.length ; i++)
@@ -136,9 +160,9 @@ test('count_MixSingleAndMultipleQuantityProductDistinct_GetsNumberOfItems', () =
     expect(cart.count(true)).toEqual(countExpected);
 })
 
-test('add_EmptyCartAddFirstSingleCartItem_GetsUpdatedNumberOfItems', () => {
+test('add_AddFirstSingleCartItem_GetsUpdatedNumberOfItems', () => {
     //given
-    let cart = new Cart(null);
+    let cart = new Cart();
     let expectedTotalPrice = 10;
     let cartItem1 = new CartItem(1,"Iphone 27",1,expectedTotalPrice);
     let items = [cartItem1];
@@ -147,5 +171,21 @@ test('add_EmptyCartAddFirstSingleCartItem_GetsUpdatedNumberOfItems', () => {
     cart.add(items);
 
     //then
-    expect(cart.total).toEqual(cart.total);
+    expect(expectedTotalPrice).toEqual(cart.total);
+})
+
+test('add_AddMoreItemsWithAnotherCurrency_ThrowException', () => {
+    //given
+    let expectedTotalPrice = 10;
+    let cartItem1 = new CartItem(1,"Iphone 27",1,expectedTotalPrice);
+    let itemsFirstAdd = [cartItem1];
+    let cart = new Cart(itemsFirstAdd);
+    let cartItem2 = new CartItem(3,"Iphone 27",1,expectedTotalPrice, "USD");
+    let itemsSecondAdd = [cartItem2];
+
+    //when
+    expect(() => cart.add(itemsSecondAdd)).toThrow(MultipleCurrenciesException);
+
+    //then
+    //Exception is thrown
 })
